@@ -108,7 +108,7 @@ checksystem() {
 							fi
 							sleep 1
 							if [[ $WWWIP != $IPADR ]]; then
-								echo "${error} www.${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+								echo "${error} ${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 							else	
 								p=$((p + 1))
 							fi
@@ -124,7 +124,7 @@ checksystem() {
 				else
 					while true; do
 						if [[ $WWWIP != $IPADR ]]; then
-							echo "${error} www.${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+							echo "${error} ${MYDOMAIN} does not resolve to the IP address of your server (${IPADR})" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 							echo
 							echo "${warn} Please check your DNS-Records." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
 							echo "${info} Press $(textb ENTER) to repeat this check or $(textb CTRL-C) to cancel the process" | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
@@ -644,7 +644,7 @@ if [ ${CLOUDFLARE} == '0' ] && [ ${USE_VALID_SSL} == '1' ]; then
 	if [ ${USE_MAILSERVER} == '1' ]; then
 		./letsencrypt-auto --agree-tos --renew-by-default --email ${SSLMAIL} --rsa-key-size 4096 -d ${MYDOMAIN} -d www.${MYDOMAIN} -d mail.${MYDOMAIN} -d autodiscover.${MYDOMAIN} -d autoconfig.${MYDOMAIN} -d dav.${MYDOMAIN} certonly >/dev/null 2>&1
 	else
-		./letsencrypt-auto --agree-tos --renew-by-default --email ${SSLMAIL} --rsa-key-size 4096 -d ${MYDOMAIN} -d www.${MYDOMAIN} certonly >/dev/null 2>&1
+		./letsencrypt-auto --agree-tos --renew-by-default --email ${SSLMAIL} --rsa-key-size 4096 -d ${MYDOMAIN} certonly >/dev/null 2>&1
 	fi
 	ln -s /etc/letsencrypt/live/${MYDOMAIN}/fullchain.pem /etc/nginx/ssl/${MYDOMAIN}.pem
 	ln -s /etc/letsencrypt/live/${MYDOMAIN}/privkey.pem /etc/nginx/ssl/${MYDOMAIN}.key.pem
@@ -672,7 +672,7 @@ server {
 
 server {
 			listen 				443;
-			server_name 		${IPADR} www.${MYDOMAIN} mail.${MYDOMAIN};
+			server_name 		${IPADR} ${MYDOMAIN} mail.${MYDOMAIN};
 			return 301 			https://${MYDOMAIN}\$request_uri;
 }
 
@@ -2372,7 +2372,7 @@ fi
 IPADR=$(ip route get 213.202.215.23 | head -1 | cut -d' ' -f8)
 INTERFACE=$(ip route get 213.202.215.23 | head -1 | cut -d' ' -f5)
 FQDNIP=$(source ~/userconfig.cfg; dig @213.202.215.23 +short ${MYDOMAIN})
-WWWIP=$(source ~/userconfig.cfg; dig @213.202.215.23 +short www.${MYDOMAIN})
+WWWIP=$(source ~/userconfig.cfg; dig @213.202.215.23 +short ${MYDOMAIN})
 ACIP=$(source ~/userconfig.cfg; dig @213.202.215.23 +short autoconfig.${MYDOMAIN})
 ADIP=$(source ~/userconfig.cfg; dig @213.202.215.23 +short autodiscover.${MYDOMAIN})
 DAVIP=$(source ~/userconfig.cfg; dig @213.202.215.23 +short dav.${MYDOMAIN})
